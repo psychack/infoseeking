@@ -1,7 +1,8 @@
 library(tidyverse)
 library(effectsize)
-library(lmerTest)
 library(lme4)
+library(lmerTest)
+library(sensemakr)
 
 bade_diff = read.csv('bade_diff.csv')
 bade_sum = read.csv('bade_sum.csv')
@@ -42,12 +43,11 @@ bade_skip_2$N_level = ifelse(bade_skip_2$N> 4.19, 'High', 'Low')
 bade_skip_2$MSS = bade_skip_2$N + bade_skip_2$P + bade_skip_2$D
 
 # Analysis
-
 #bade_diff$scenario_trial=as.numeric(bade_diff$scenario_trial)
 lm(skipped ~ P + N + D +stai+ bade_condition + bade_condition:stai, bade_skip_2) %>% 
   summary()
-lm(skipped ~ P + N + D +stai+ bade_condition + stai:bade_condition, bade_skip_2) %>% 
-  cohens_f_squared(alternative = 'two.sided')
+lm(skipped ~ P + N + D +stai+ bade_condition + stai:bade_condition, bade_skip_2) %>% effectsize()
+lm(skipped ~ P + N + D +stai+ bade_condition + stai:bade_condition, bade_skip_2) %>% partial_f2()
 
 lmer(diff ~ P + N + D + scenario_trial + bade_condition + bade_condition:scenario_trial + 
        stai_score + P:scenario_trial + D:scenario_trial + N:scenario_trial + freq +
@@ -55,9 +55,7 @@ lmer(diff ~ P + N + D + scenario_trial + bade_condition + bade_condition:scenari
 
 lmer(diff ~ P + N + D + scenario_trial + bade_condition + bade_condition:scenario_trial + 
        stai_score + P:scenario_trial + D:scenario_trial + N:scenario_trial + freq +
-       stai_score:bade_condition + stai_score:scenario_trial +(1|subject), bade_diff) %>%
-  cohens_f_squared(alternative = 'two.sided')
-
+       stai_score:bade_condition + stai_score:scenario_trial +(1|subject), bade_diff) %>% effectsize()
 
 # figures
 bade_diff$scenario_trial=as.character(bade_diff$scenario_trial)
