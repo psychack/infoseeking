@@ -61,7 +61,14 @@ lmer(diff ~ P + N + D + scenario_trial + bade_condition + bade_condition:scenari
 bade_diff$scenario_trial=as.character(bade_diff$scenario_trial)
 ggplot(bade_diff, aes(x=P, y=diff, color=scenario_trial)) + geom_smooth(method = 'lm') +
   xlab('Positive schizotypy') + ylab('Difference in rating (True - Lure)') + 
-  scale_color_manual(values=c("#117A65","#2980B9","#A93226"), name="Picture \nstage")
+  scale_color_manual(values=c("#117A65","#2980B9","#A93226"), name="Picture \nstage") +
+  theme(axis.title = element_text(size=15), legend.title = element_text(size=13), 
+        legend.text = element_text(size=11))
+ggsave('fig2.png')
+
+diff_table = group_by(bade_diff, bade_condition, scenario_trial) %>%
+  summarize(diff_m=mean(diff, na.rm=TRUE), diff_sd=sd(diff, na.rm=TRUE),
+            diff_se=sd(diff, na.rm=TRUE)/sqrt(175))
 
 ggplot(diff_table, aes(x=bade_condition, y=diff_m, fill=scenario_trial)) + 
   geom_bar(stat = 'identity', position = 'dodge') +
@@ -69,4 +76,7 @@ ggplot(diff_table, aes(x=bade_condition, y=diff_m, fill=scenario_trial)) +
   geom_errorbar(aes(ymin=diff_m-diff_se, ymax=diff_m+diff_se), 
                 position =position_dodge(0.9), width=0.2, linewidth=0.3) +
   xlab('Condition') + ylab('Difference in rating (True - Lures)') +
-  scale_fill_manual(values=c('#85C1E9', '#3498DB','#2471A3'))
+  scale_fill_manual(values=c('#85C1E9', '#3498DB','#2471A3')) +
+  theme(axis.title = element_text(size=13), axis.text = element_text(size=10),
+        legend.title = element_text(size=12), legend.text = element_text(size=11))
+ggsave('fig3.png')
